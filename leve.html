@@ -1,0 +1,3285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leve Cottons - Premium Indian Saree Shopping</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Enhanced Header Styles */
+        .top-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .top-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 8s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .main-header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            border-bottom: 1px solid rgba(103, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .main-header.scrolled {
+            box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+        }
+        
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Enhanced Search Bar */
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            flex: 1;
+            margin: 0 2rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 50px 12px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .search-suggestions.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        /* Enhanced Navigation */
+        .nav-item {
+            position: relative;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.08);
+            color: #667eea;
+            transform: translateY(-1px);
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover::after {
+            width: 80%;
+        }
+        
+        /* Mega Menu Enhancement */
+        .mega-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            margin-top: 20px;
+        }
+        
+        .mega-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .mega-menu-content {
+            padding: 2rem;
+        }
+        
+        .mega-menu-column h3 {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 8px;
+        }
+        
+        .mega-menu-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .mega-menu-link {
+            display: block;
+            padding: 8px 12px;
+            color: #4b5563;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mega-menu-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: translateX(-100%);
+            transition: transform 0.2s ease;
+        }
+        
+        .mega-menu-link:hover {
+            background: rgba(102, 126, 234, 0.08);
+            color: #667eea;
+            padding-left: 20px;
+        }
+        
+        .mega-menu-link:hover::before {
+            transform: translateX(0);
+        }
+        
+        /* Enhanced Action Buttons */
+        .action-btn {
+            position: relative;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .action-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Logo Enhancement */
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .logo:hover::after {
+            width: 100%;
+        }
+        
+        /* Split Screen Hero Carousel - DIFFERENT GRADIENTS FOR EACH SLIDE */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            height: 85vh;
+            overflow: hidden;
+            /* NO GRADIENT BACKGROUND FOR PARENT - EACH SLIDE WILL HAVE ITS OWN */
+            background: #f8f9fa;
+        }
+        
+        .hero-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* EACH SLIDE WILL HAVE ITS OWN GRADIENT */
+        }
+        
+        /* Slide 1 - Purple Gradient */
+        .hero-slide:nth-child(1) {
+            background: linear-gradient(135deg, #02146e 0%, #970ab7 100%) !important;
+        }
+        
+        /* Slide 2 - Orange/Pink Gradient */
+        .hero-slide:nth-child(2) {
+            background: linear-gradient(135deg, #9504a5 0%, #ce021d 100%) !important;
+        }
+        
+        /* Slide 3 - Blue/Green Gradient */
+        .hero-slide:nth-child(3) {
+            background: linear-gradient(135deg, #024b8b 0%, #1ee3c8 100%) !important;
+        }
+        
+        .hero-slide.active {
+            opacity: 1;
+        }
+        
+        .hero-left {
+            /* INHERIT BACKGROUND FROM PARENT SLIDE */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 4rem;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hero-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+            z-index: 2;
+        }
+        
+        .hero-right {
+            /* INHERIT BACKGROUND FROM PARENT SLIDE */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hero-right::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            animation: rotate 30s linear infinite reverse;
+            z-index: 2;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            color: white;
+            max-width: 600px;
+        }
+        
+        .hero-image-container {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-image {
+            width: 100%;
+            /* max-width: 400px; */
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.6s ease;
+            filter: drop-shadow(0 25px 50px rgba(0,0,0,0.3));
+        }
+        
+        .hero-slide.active .hero-image {
+            transform: scale(1);
+        }
+        
+        .hero-slide:not(.active) .hero-image {
+            transform: scale(0.9);
+        }
+        
+        .text-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInUp 0.8s ease forwards;
+        }
+        
+        .text-animate-delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .text-animate-delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .text-animate-delay-3 {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #fff 0%, #f0f0f0 50%, #fff 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .carousel-indicator {
+            width: 50px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carousel-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: white;
+            transition: left 5s linear;
+        }
+        
+        .carousel-indicator.active::before {
+            left: 0;
+        }
+        
+        .carousel-indicator.active {
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .carousel-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .badge-glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+        }
+        
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .category-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(103, 126, 234, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .category-card:hover::before {
+            opacity: 1;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        /* Testimonial Section */
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 60px;
+            color: #667eea;
+            opacity: 0.1;
+            font-family: Georgia, serif;
+        }
+        
+        /* Instagram Feed */
+        .instagram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .instagram-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .instagram-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .instagram-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .instagram-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .instagram-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .instagram-item:hover .instagram-overlay {
+            opacity: 1;
+        }
+        
+        /* Brand Partners */
+        .brand-logo {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .brand-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        /* Blog Section */
+        .blog-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .blog-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .blog-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* Trust Badges */
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .trust-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .shape-decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -150px;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -100px;
+            right: -100px;
+        }
+        
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: -75px;
+        }
+        
+        /* Banner Carousel Styles */
+        .banner-carousel {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        
+        .banner-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .banner-slide.active {
+            opacity: 1;
+        }
+        
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+        }
+        
+        .banner-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+        
+        .banner-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            space-x: 8px;
+            z-index: 10;
+        }
+        
+        .banner-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .banner-dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 4px;
+        }
+        
+     
+        /* Enhanced Festival Offers Section */
+        .festival-offers {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .festival-offers::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: movePattern 20s linear infinite;
+        }
+        
+        @keyframes movePattern {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+        
+        .offer-image-left {
+            position: relative;
+            animation: floatLeft 6s ease-in-out infinite;
+        }
+        
+        @keyframes floatLeft {
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        
+        .offer-image-right {
+            position: relative;
+            animation: floatRight 6s ease-in-out infinite;
+        }
+        
+        @keyframes floatRight {
+            0%, 100% { transform: translateY(0px) rotate(2deg); }
+            50% { transform: translateY(-20px) rotate(-2deg); }
+        }
+        
+        .offer-content {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .offer-input {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .offer-input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        .offer-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* New Sections Styles */
+        .featured-collection {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .featured-collection:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .featured-collection img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .featured-collection:hover img {
+            transform: scale(1.05);
+        }
+        
+        .collection-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 2rem;
+            color: white;
+        }
+        
+        .size-chart {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .size-table th,
+        .size-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .size-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        
+        .size-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .gift-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .gift-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .gift-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .review-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .newsletter-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .newsletter-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: movePattern 20s linear infinite;
+        }
+        
+        .trending-product {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .trending-product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .trending-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        /* Responsive Media Queries */
+        @media (max-width: 1280px) {
+            .search-container {
+                margin: 0 1rem;
+            }
+            
+            .hero-left, .hero-right {
+                padding: 3rem;
+            }
+            
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .nav-desktop {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .festival-offers .grid {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+            
+            .offer-image-left, .offer-image-right {
+                display: none;
+            }
+            
+            .instagram-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-carousel {
+                height: 100vh;
+            }
+            
+            .hero-slide {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-left, .hero-right {
+                padding: 2rem;
+            }
+            
+            .hero-right {
+                display: none;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-content p {
+                font-size: 1rem;
+            }
+            
+            .banner-carousel {
+                height: 200px;
+            }
+            
+            .banner-content h2 {
+                font-size: 1.5rem;
+            }
+            
+            .look-card img {
+                height: 300px;
+            }
+            
+            .testimonial-card {
+                padding: 1.5rem;
+            }
+            
+            .size-chart {
+                padding: 1rem;
+            }
+            
+            .size-table th,
+            .size-table td {
+                padding: 8px;
+                font-size: 0.875rem;
+            }
+            
+            .blog-card img {
+                height: 150px;
+            }
+            
+            .trust-badges {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .search-container {
+                display: none;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .action-btn span {
+                display: none;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-content .flex {
+                flex-direction: column;
+            }
+            
+            .festival-offers h2 {
+                font-size: 2rem;
+            }
+            
+            .festival-offers .flex {
+                flex-direction: column;
+            }
+            
+            .festival-offers input {
+                width: 100%;
+            }
+            
+            .instagram-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .trust-badges {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="text-center">
+            <div class="loader mx-auto mb-4"></div>
+            <h2 class="text-white text-2xl font-bold">Leve Cottons</h2>
+            <p class="text-white/80 mt-2">Loading amazing collections...</p>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold gradient-text">Menu</h2>
+                <button id="close-mobile-menu" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <nav class="space-y-4">
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-3">Women</h3>
+                    <ul class="space-y-2 ml-4">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Silk Sarees</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Cotton Sarees</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Designer Sarees</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Bridal Sarees</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-3">Categories</h3>
+                    <ul class="space-y-2 ml-4">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Dress Material</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Kurtis</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Lehengas</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Accessories</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-3">Help</h3>
+                    <ul class="space-y-2 ml-4">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Track Order</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Returns</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">FAQs</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600">Contact Us</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Top Banner -->
+    <div class="top-header text-white py-3 text-center text-sm relative">
+        <p class="relative z-10 font-medium">🎉 Grand Diwali Sale: Up to 80% OFF + Extra 10% with Code: DIWALI80 🎉</p>
+    </div>
+
+    <!-- Enhanced Main Header -->
+    <header id="main-header" class="main-header sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <h1 class="logo">Leve Cottons</h1>
+                </div>
+
+                <!-- Enhanced Search Bar - Hidden on Mobile -->
+                <div class="search-container hidden md:block">
+                    <input type="text" 
+                           class="search-input" 
+                           id="searchInput"
+                           placeholder="Search for products, brands, and more..."
+                           autocomplete="off">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    
+                    <!-- Search Suggestions Dropdown -->
+                    <div class="search-suggestions" id="searchSuggestions">
+                        <div class="p-4">
+                            <div class="text-xs font-semibold text-gray-500 mb-3">TRENDING SEARCHES</div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs cursor-pointer hover:bg-purple-200 transition">Silk Sarees</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs cursor-pointer hover:bg-purple-200 transition">Bridal Collection</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs cursor-pointer hover:bg-purple-200 transition">Designer Wear</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs cursor-pointer hover:bg-purple-200 transition">Cotton Sarees</span>
+                            </div>
+                            <div class="text-xs font-semibold text-gray-500 mb-3">RECENT SEARCHES</div>
+                            <div class="space-y-2">
+                                <div class="flex items-center text-sm text-gray-600 hover:text-purple-600 cursor-pointer">
+                                    <i class="fas fa-clock mr-2 text-xs"></i>
+                                    Banarasi Silk
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600 hover:text-purple-600 cursor-pointer">
+                                    <i class="fas fa-clock mr-2 text-xs"></i>
+                                    Party Wear Sarees
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="nav-desktop hidden lg:flex items-center space-x-1">
+                    <!-- <div class="nav-item group">
+                        <span class="flex items-center space-x-1 font-medium">
+                            <span>Women</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </span>
+                       
+                        <div class="mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="grid grid-cols-4 gap-8">
+                                    <div class="mega-menu-column">
+                                        <h3>Sarees</h3>
+                                        <a href="#" class="mega-menu-link">Silk Sarees</a>
+                                        <a href="#" class="mega-menu-link">Cotton Sarees</a>
+                                        <a href="#" class="mega-menu-link">Designer Sarees</a>
+                                        <a href="#" class="mega-menu-link">Bridal Sarees</a>
+                                        <a href="#" class="mega-menu-link">Casual Sarees</a>
+                                        <a href="#" class="mega-menu-link">Party Wear</a>
+                                    </div>
+                                    <div class="mega-menu-column">
+                                        <h3>Dress Material</h3>
+                                        <a href="#" class="mega-menu-link">Salwar Suits</a>
+                                        <a href="#" class="mega-menu-link">Kurtis</a>
+                                        <a href="#" class="mega-menu-link">Lehengas</a>
+                                        <a href="#" class="mega-menu-link">Gowns</a>
+                                        <a href="#" class="mega-menu-link">Anarkali</a>
+                                    </div>
+                                    <div class="mega-menu-column">
+                                        <h3>Accessories</h3>
+                                        <a href="#" class="mega-menu-link">Jewelry</a>
+                                        <a href="#" class="mega-menu-link">Bags</a>
+                                        <a href="#" class="mega-menu-link">Footwear</a>
+                                        <a href="#" class="mega-menu-link">Watches</a>
+                                        <a href="#" class="mega-menu-link">Belts</a>
+                                    </div>
+                                    <div class="mega-menu-column">
+                                        <img src="https://picsum.photos/seed/menu-banner/300/200.jpg" alt="Banner" class="rounded-lg shadow-lg w-full">
+                                        <p class="mt-3 text-sm text-gray-600">New Collection Available</p>
+                                        <button class="mt-2 text-purple-600 font-semibold text-sm hover:text-purple-700">Shop Now →</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="nav-item">
+                        <span class="font-medium">Home </span>
+                    </div>
+                    <div class="nav-item">
+                        <span class="font-medium">About Us</span>
+                    </div>
+                    <div class="nav-item">
+                        <span class="font-medium">All Collection</span>
+                    </div>
+                    <div class="nav-item">
+                        <span class="font-medium">Contact Us</span>
+                    </div>
+                </nav>
+
+                <!-- Right Section Actions -->
+                <div class="flex items-center space-x-2">
+                    <button id="user-menu-btn" class="action-btn flex flex-col items-center justify-center p-2">
+                        <i class="fas fa-user text-lg"></i>
+                        <span class="text-xs mt-1 hidden sm:block">Profile</span>
+                    </button>
+                    <button class="action-btn flex flex-col items-center justify-center p-2">
+                        <i class="fas fa-heart text-lg"></i>
+                        <span class="text-xs mt-1 hidden sm:block">Wishlist</span>
+                    </button>
+                    <button id="cart-btn" class="action-btn flex flex-col items-center justify-center p-2 relative">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        <span class="text-xs mt-1 hidden sm:block">Cart</span>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-purple-600 transition">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Split Screen Hero Carousel - DIFFERENT GRADIENTS FOR EACH SLIDE -->
+    <section class="hero-carousel">
+        <!-- Slide 1 - Purple Gradient -->
+        <div class="hero-slide active">
+            <div class="hero-left">
+                <div class="shape-decoration shape-1"></div>
+                <div class="shape-decoration shape-2"></div>
+                <div class="hero-content">
+                    <div class="inline-block bg-white/20 backdrop-blur px-4 py-2 rounded-full mb-6 floating-element badge-glow">
+                        <span class="text-sm font-semibold">🔥 DIWALI EXCLUSIVE</span>
+                    </div>
+                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 playfair text-animate">
+                        Radiant <span class="gradient-text">Diwali</span><br>Collection
+                    </h1>
+                    <p class="text-xl mb-8 opacity-90 text-animate-delay-1">
+                        Illuminate your celebrations with our exquisite silk sarees crafted with love and tradition
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 text-animate-delay-2">
+                        <button class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105 shadow-xl">
+                            <i class="fas fa-shopping-bag mr-2"></i> Shop Now - 70% OFF
+                        </button>
+                        <button class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition transform hover:scale-105">
+                            <i class="fas fa-play-circle mr-2"></i> Watch Video
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-8 mt-8 text-animate-delay-3">
+                        <div>
+                            <p class="text-3xl font-bold">500+</p>
+                            <p class="text-sm opacity-80">New Designs</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold">10K+</p>
+                            <p class="text-sm opacity-80">Happy Customers</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold">4.9★</p>
+                            <p class="text-sm opacity-80">Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-image-container">
+                    <img src="indian-women-standing-together-breast-cancer-awareness_712444-1441.png" alt="Diwali Collection" class="hero-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 - Pink/Orange Gradient -->
+        <div class="hero-slide">
+            <div class="hero-left">
+                <div class="shape-decoration shape-1"></div>
+                <div class="shape-decoration shape-3"></div>
+                <div class="hero-content">
+                    <div class="inline-block bg-white/20 backdrop-blur px-4 py-2 rounded-full mb-6 floating-element badge-glow">
+                        <span class="text-sm font-semibold">✨ BRIDAL SERIES</span>
+                    </div>
+                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 playfair text-animate">
+                        Dream Wedding <span class="gradient-text">Sarees</span>
+                    </h1>
+                    <p class="text-xl mb-8 opacity-90 text-animate-delay-1">
+                        Make your special day unforgettable with our premium bridal collection featuring intricate embroidery
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 text-animate-delay-2">
+                        <button class="bg-white text-orange-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105 shadow-xl">
+                            <i class="fas fa-crown mr-2"></i> Explore Bridal
+                        </button>
+                        <button class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition transform hover:scale-105">
+                            <i class="fas fa-calendar mr-2"></i> Book Consultation
+                        </button>
+                    </div>
+                          <div class="flex items-center space-x-8 mt-8 text-animate-delay-3">
+                        <div>
+                            <p class="text-3xl font-bold">500+</p>
+                            <p class="text-sm opacity-80">New Designs</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold">10K+</p>
+                            <p class="text-sm opacity-80">Happy Customers</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold">4.9★</p>
+                            <p class="text-sm opacity-80">Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-image-container">
+                    <img src="portrts-two-stunning-indian-women-taken-temple_1346048-6402.png" alt="Bridal Collection" class="hero-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 - Blue/Cyan Gradient -->
+        <div class="hero-slide">
+            <div class="hero-left">
+                <div class="shape-decoration shape-2"></div>
+                <div class="shape-decoration shape-3"></div>
+                <div class="hero-content">
+                    <div class="inline-block bg-white/20 backdrop-blur px-4 py-2 rounded-full mb-6 floating-element badge-glow">
+                        <span class="text-sm font-semibold">🎁 BUY 1 GET 1</span>
+                    </div>
+                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 playfair text-animate">
+                        Designer <span class="gradient-text">Extravaganza</span>
+                    </h1>
+                    <p class="text-xl mb-8 opacity-90 text-animate-delay-1">
+                        Premium designer sarees at unbelievable prices - Limited time offer on selected collections
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 text-animate-delay-2">
+                        <button class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105 shadow-xl">
+                            <i class="fas fa-gift mr-2"></i> Grab BOGO Deal
+                        </button>
+                        <button class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition transform hover:scale-105">
+                            <i class="fas fa-tags mr-2"></i> View All Offers
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-8 text-animate-delay-3">
+                        <div class="bg-white/20 backdrop-blur rounded-lg px-4 py-2">
+                            <p class="text-2xl font-bold">50% OFF</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur rounded-lg px-4 py-2">
+                            <p class="text-sm">Free Shipping</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur rounded-lg px-4 py-2">
+                            <p class="text-sm">COD Available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-image-container">
+                    <img src="breast-cancer-awareness-celebrating-strength-diversity-indian-women_712444-1440.png" alt="Designer Collection" class="hero-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Carousel Indicators -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-10">
+            <div class="carousel-indicator active" data-slide="0"></div>
+            <div class="carousel-indicator" data-slide="1"></div>
+            <div class="carousel-indicator" data-slide="2"></div>
+        </div>
+
+        <!-- Carousel Navigation -->
+        <button id="prev-slide" class="carousel-nav left-8">
+            <i class="fas fa-chevron-left text-white text-xl"></i>
+        </button>
+        <button id="next-slide" class="carousel-nav right-8">
+            <i class="fas fa-chevron-right text-white text-xl"></i>
+        </button>
+    </section>
+
+
+
+    <!-- Categories Section -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center">Shop by Category</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <div class="category-card bg-white rounded-xl p-6 text-center cursor-pointer" style="    background-color: #ffdfe7;">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-gem text-3xl text-white"></i>
+                    </div>
+                    <h3 class="font-semibold">Silk Sarees</h3>
+                    <p class="text-xs text-gray-500 mt-1">250+ Items</p>
+                </div>
+                <div class="category-card bg-white rounded-xl p-6 text-center cursor-pointer" style="    background-color: #d3e3ff;">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-tshirt text-3xl text-white"></i>
+                    </div>
+                    <h3 class="font-semibold">Cotton Sarees</h3>
+                    <p class="text-xs text-gray-500 mt-1">180+ Items</p>
+                </div>
+                <div class="category-card bg-white rounded-xl p-6 text-center cursor-pointer" style="    background-color: #dfc4f9;">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-crown text-3xl text-white"></i>
+                    </div>
+                    <h3 class="font-semibold">Designer</h3>
+                    <p class="text-xs text-gray-500 mt-1">120+ Items</p>
+                </div>
+                <div class="category-card bg-white rounded-xl p-6 text-center cursor-pointer" style="    background-color: #f4bbbb;">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-heart text-3xl text-white"></i>
+                    </div>
+                    <h3 class="font-semibold">Bridal</h3>
+                    <p class="text-xs text-gray-500 mt-1">80+ Items</p>
+                </div>
+                <div class="category-card bg-white rounded-xl p-6 text-center cursor-pointer" style="    background-color: #c2fdd8;">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-leaf text-3xl text-white"></i>
+                    </div>
+                    <h3 class="font-semibold">Casual</h3>
+                    <p class="text-xs text-gray-500 mt-1">300+ Items</p>
+                </div>
+                <div class="category-card bg-white rounded-xl p-6 text-center cursor-pointer" style="    background-color: #fef0c2;">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-star text-3xl text-white"></i>
+                    </div>
+                    <h3 class="font-semibold">Party Wear</h3>
+                    <p class="text-xs text-gray-500 mt-1">150+ Items</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    
+    <!-- Flash Sale Section -->
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                    <h2 class="text-3xl font-bold">⚡ Flash Sale</h2>
+                    <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-lg flex items-center space-x-3">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer" class="font-bold">23:45:30</span>
+                    </div>
+                </div>
+                <button class="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-lg flex items-center space-x-3">
+                    View All <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="112_dbb19cf0-9864-4e5d-96a2-96ad846c3a22.webp" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">65% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Premium Kanjivaram Silk</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹3,499</span>
+                            <span class="text-sm text-gray-500 line-through">₹9,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(2.3k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">75% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- More flash sale products -->
+                <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="98_8f18e4f9-bfc1-4936-8758-260f18623d84.webp" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">70% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Banarasi Silk Traditional</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹2,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹9,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(1.8k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">60% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="95_ccb3843f-8bd3-461b-8cec-4976ff8514ad.webp" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">55% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Designer Party Wear</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹1,799</span>
+                            <span class="text-sm text-gray-500 line-through">₹3,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(987)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">85% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="156_5dd76da9-a086-4cf6-9d27-3cf77af96c72.webp" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">60% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Cotton Daily Wear</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹799</span>
+                            <span class="text-sm text-gray-500 line-through">₹1,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(1.2k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">45% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="4_1d6d287b-6ae4-4aab-baa3-45bbdff243de.webp" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">50% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Net Saree with Embroidery</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹1,499</span>
+                            <span class="text-sm text-gray-500 line-through">₹2,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(654)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">70% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="48_fc9ef933-b57f-4545-984b-b16a59fdfe19.webp" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">75% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Wedding Special Collection</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹4,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹19,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(3.4k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">90% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                  <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="young-indian-woman-wearing-sari_23-2149400843.jpg" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">75% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Wedding Special Collection</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹4,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹19,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(3.4k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">90% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                  <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="young-woman-posing-while-wearing-traditional-sari-garment_23-2149565173.jpg" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">75% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Wedding Special Collection</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹4,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹19,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(3.4k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">90% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                  <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="portrait-beautiful-woman-wearing-traditional-sari-garment_23-2149565120.jpg" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">75% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Wedding Special Collection</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹4,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹19,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(3.4k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">90% Sold</p>
+                        </div>
+                    </div>
+                </div>
+                  <div class="product-card bg-white border rounded-lg overflow-hidden group">
+                    <div class="relative overflow-hidden">
+                        <img src="two-woman-stand-outside-and-pose-for-the-camera.webp" alt="Product" class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">75% OFF</span>
+                        <button class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg">
+                            <i class="far fa-heart text-gray-600 hover:text-red-500 transition"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Wedding Special Collection</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹4,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹19,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(3.4k)</span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">90% Sold</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Carousel Section -->
+    <section class="py-8">
+        <div class="container mx-auto px-4">
+            <div class="banner-carousel">
+                <!-- Banner Slide 1 -->
+                <div class="banner-slide active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <img src="ethnic-indian-women-wearing-traditional-sarees-gold-accessories-holding-plate-filled-with-religious-offerings-festival_117038-72052.jpg" alt="Banner 1" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="banner-content">
+                        <h2 class="text-3xl font-bold mb-4">Festive Collection Launch</h2>
+                        <p class="text-lg mb-6">Exclusive designs for the upcoming festival season</p>
+                        <button class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Explore Now
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Banner Slide 2 -->
+                <div class="banner-slide" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <img src="women-wear-traditional-indian-clothing_284126-1900.jpg" alt="Banner 2" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="banner-content">
+                        <h2 class="text-3xl font-bold mb-4">Weekend Special Offer</h2>
+                        <p class="text-lg mb-6">Flat 40% off on selected items</p>
+                        <button class="bg-white text-pink-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Banner Slide 3 -->
+                <div class="banner-slide" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <img src="hand-holding-colorful-indian-patterned-cloth-material_585982-9146.jpg" alt="Banner 3" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="banner-content">
+                        <h2 class="text-3xl font-bold mb-4">New Arrivals</h2>
+                        <p class="text-lg mb-6">Check out our latest collection</p>
+                        <button class="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            View Collection
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Banner Dots -->
+                <div class="banner-dots">
+                    <span class="banner-dot active" data-banner="0"></span>
+                    <span class="banner-dot" data-banner="1"></span>
+                    <span class="banner-dot" data-banner="2"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Collections Section - New -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center">Featured Collections</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="featured-collection">
+                    <img src="young-indian-woman-wearing-sari_23-2149400845.jpg" alt="Royal Heritage" class="w-full">
+                    <div class="collection-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Royal Heritage</h3>
+                        <p class="mb-4">Timeless elegance inspired by royal traditions</p>
+                        <button class="bg-white text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition">
+                            Explore Collection
+                        </button>
+                    </div>
+                </div>
+                <div class="featured-collection">
+                    <img src="woman-celebrating-indian-republic-day_23-2151142225.jpg" alt="Modern Fusion" class="w-full">
+                    <div class="collection-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Modern Fusion</h3>
+                        <p class="mb-4">Contemporary designs with traditional elements</p>
+                        <button class="bg-white text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition">
+                            Explore Collection
+                        </button>
+                    </div>
+                </div>
+                <div class="featured-collection">
+                    <img src="woman-sari-with-pink-gold-design_788415-7699.jpg" alt="Festive Special" class="w-full">
+                    <div class="collection-overlay">
+                        <h3 class="text-2xl font-bold mb-2">Festive Special</h3>
+                        <p class="mb-4">Vibrant colors and designs for celebrations</p>
+                        <button class="bg-white text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition">
+                            Explore Collection
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+  
+
+    <!-- Gift Cards Section - New -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center">Gift Cards</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="gift-card">
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-bold mb-2">Birthday Special</h3>
+                        <p class="mb-4">Perfect gift for your loved ones on their special day</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl font-bold">₹1,000</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">10% Bonus</span>
+                        </div>
+                        <button class="bg-white text-pink-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+                <div class="gift-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-bold mb-2">Wedding Gift</h3>
+                        <p class="mb-4">A thoughtful gift for the newlywed couple</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl font-bold">₹5,000</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">15% Bonus</span>
+                        </div>
+                        <button class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+                <div class="gift-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-bold mb-2">Festival Special</h3>
+                        <p class="mb-4">Celebrate festivals with the gift of choice</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl font-bold">₹2,500</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-sm">12% Bonus</span>
+                        </div>
+                        <button class="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Trending Now Section - New -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center">Trending Now</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="trending-product">
+                    <div class="relative">
+                        <span class="trending-badge">TRENDING</span>
+                        <img src="dazzling-attire-saree-indian-women-festival-indian-women-saree_1002350-1995.jpg" alt="Trending Product" class="w-full h-64 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Floral Print Silk Saree</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹3,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹5,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(856)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-product">
+                    <div class="relative">
+                        <span class="trending-badge">HOT SELLER</span>
+                        <img src="sister-photo_1187127-1068.jpg" alt="Trending Product" class="w-full h-64 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Embroidered Party Wear</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹2,499</span>
+                            <span class="text-sm text-gray-500 line-through">₹3,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(623)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-product">
+                    <div class="relative">
+                        <span class="trending-badge">NEW ARRIVAL</span>
+                        <img src="two-woman-stand-outside-and-pose-for-the-camera.webp" alt="Trending Product" class="w-full h-64 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Geometric Print Cotton</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹1,299</span>
+                            <span class="text-sm text-gray-500 line-through">₹1,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(412)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-product">
+                    <div class="relative">
+                        <span class="trending-badge">LIMITED EDITION</span>
+                        <img src="young-woman-posing-while-wearing-traditional-sari-garment_23-2149565173.jpg" alt="Trending Product" class="w-full h-64 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2">Designer Net Saree</h3>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl font-bold text-purple-600">₹4,999</span>
+                            <span class="text-sm text-gray-500 line-through">₹7,999</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 ml-1">(934)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Feed Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Follow Us on Instagram</h2>
+            <div class="instagram-grid">
+                <div class="instagram-item">
+                    <img src="https://picsum.photos/seed/insta1/300/300.jpg" alt="Instagram Post" class="w-full">
+                    <div class="instagram-overlay">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </div>
+                </div>
+                <div class="instagram-item">
+                    <img src="https://picsum.photos/seed/insta2/300/300.jpg" alt="Instagram Post" class="w-full">
+                    <div class="instagram-overlay">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </div>
+                </div>
+                <div class="instagram-item">
+                    <img src="https://picsum.photos/seed/insta3/300/300.jpg" alt="Instagram Post" class="w-full">
+                    <div class="instagram-overlay">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </div>
+                </div>
+                <div class="instagram-item">
+                    <img src="https://picsum.photos/seed/insta4/300/300.jpg" alt="Instagram Post" class="w-full">
+                    <div class="instagram-overlay">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </div>
+                </div>
+                <div class="instagram-item">
+                    <img src="https://picsum.photos/seed/insta5/300/300.jpg" alt="Instagram Post" class="w-full">
+                    <div class="instagram-overlay">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </div>
+                </div>
+             
+            </div>
+            <div class="text-center mt-8">
+                <button class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+                    <i class="fab fa-instagram mr-2"></i> Follow @Leve Cottons
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog/Inspiration Section -->
+    <!-- <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Style Inspiration</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="blog-card">
+                    <img src="https://picsum.photos/seed/blog1/400/250.jpg" alt="Blog Post" class="w-full">
+                    <div class="p-6">
+                        <span class="text-purple-600 text-sm font-semibold">STYLE GUIDE</span>
+                        <h3 class="text-xl font-bold mt-2 mb-3">How to Style a Silk Saree for Weddings</h3>
+                        <p class="text-gray-600 mb-4">Discover the perfect ways to drape your silk saree for that special occasion...</p>
+                        <a href="#" class="text-purple-600 font-semibold hover:text-purple-700">Read More →</a>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <img src="https://picsum.photos/seed/blog2/400/250.jpg" alt="Blog Post" class="w-full">
+                    <div class="p-6">
+                        <span class="text-purple-600 text-sm font-semibold">FASHION TIPS</span>
+                        <h3 class="text-xl font-bold mt-2 mb-3">5 Must-Have Sarees for Your Wardrobe</h3>
+                        <p class="text-gray-600 mb-4">Build a versatile collection with these essential saree styles...</p>
+                        <a href="#" class="text-purple-600 font-semibold hover:text-purple-700">Read More →</a>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <img src="https://picsum.photos/seed/blog3/400/250.jpg" alt="Blog Post" class="w-full">
+                    <div class="p-6">
+                        <span class="text-purple-600 text-sm font-semibold">CARE GUIDE</span>
+                        <h3 class="text-xl font-bold mt-2 mb-3">How to Maintain Your Silk Sarees</h3>
+                        <p class="text-gray-600 mb-4">Keep your precious silk sarees looking new with these care tips...</p>
+                        <a href="#" class="text-purple-600 font-semibold hover:text-purple-700">Read More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Enhanced Newsletter Section - New -->
+    <section class="newsletter-section py-16 text-white relative overflow-hidden">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-4">Stay Updated with Our Latest Collections</h2>
+                <p class="text-xl mb-8 opacity-90">Subscribe to our newsletter and get exclusive offers, style tips, and early access to new arrivals</p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+                    <input type="email" 
+                           placeholder="Enter your email address" 
+                           class="offer-input px-8 py-4 rounded-lg text-white w-full sm:w-96 focus:outline-none focus:ring-4 focus:ring-white/30">
+                    <button class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105 shadow-xl">
+                        Subscribe Now
+                    </button>
+                </div>
+                
+                <div class="flex justify-center space-x-8">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span>Exclusive Offers</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span>Style Tips</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span>Early Access</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Partners Section -->
+    <!-- <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center mb-8">Trusted by Leading Brands</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+                <div class="flex items-center justify-center">
+                    <img src="https://picsum.photos/seed/brand1/150/60.jpg" alt="Brand 1" class="brand-logo h-12">
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="https://picsum.photos/seed/brand2/150/60.jpg" alt="Brand 2" class="brand-logo h-12">
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="https://picsum.photos/seed/brand3/150/60.jpg" alt="Brand 3" class="brand-logo h-12">
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="https://picsum.photos/seed/brand4/150/60.jpg" alt="Brand 4" class="brand-logo h-12">
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="https://picsum.photos/seed/brand5/150/60.jpg" alt="Brand 5" class="brand-logo h-12">
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="https://picsum.photos/seed/brand6/150/60.jpg" alt="Brand 6" class="brand-logo h-12">
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+
+  <!-- Customer Testimonials Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="testimonial-card">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/seed/customer1/60/60.jpg" alt="Customer" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Priya Sharma</h4>
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Absolutely love the quality of sarees I purchased! The embroidery is exquisite and the fabric is so comfortable. Customer service was exceptional too."</p>
+                    <p class="text-sm text-gray-500">Verified Buyer • Silk Saree</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/seed/customer2/60/60.jpg" alt="Customer" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Anjali Patel</h4>
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"The bridal collection is stunning! I got so many compliments at my wedding. The matching blouse was perfectly stitched. Highly recommend!"</p>
+                    <p class="text-sm text-gray-500">Verified Buyer • Bridal Saree</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/seed/customer3/60/60.jpg" alt="Customer" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Meera Reddy</h4>
+                            <div class="flex text-yellow-400 text-xs">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Great variety of designs and reasonable prices. The delivery was quick and the packaging was beautiful. Will definitely shop again!"</p>
+                    <p class="text-sm text-gray-500">Verified Buyer • Cotton Saree</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- Enhanced Festival Offers Section with 2-Column Layout -->
+<!-- Enhanced Festival Offers Section with 2-Column Layout -->
+<section class="festival-offers py-20 text-white relative overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute top-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full translate-x-1/2 translate-y-1/2"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <!-- Left Column - Content -->
+            <div class="offer-content text-center lg:text-left">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-4">Our  Exclusive Festival Offers</h2>
+                <p class="text-xl mb-8 opacity-90">Get extra 20% off on your first order + Free Shipping</p>
+                
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-8">
+                    <input type="email" 
+                           placeholder="Enter your email address" 
+                           class="offer-input px-8 py-4 rounded-lg text-white w-full sm:w-96 focus:outline-none focus:ring-4 focus:ring-white/30">
+                    <button class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105 shadow-xl">
+                        Subscribe Now
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap justify-center lg:justify-start gap-6">
+                    <div class="stat-card rounded-lg p-4 text-center">
+                        <p class="text-3xl font-bold">10K+</p>
+                        <p class="text-sm opacity-80">Happy Customers</p>
+                    </div>
+                    <div class="stat-card rounded-lg p-4 text-center">
+                        <p class="text-3xl font-bold">500+</p>
+                        <p class="text-sm opacity-80">Products</p>
+                    </div>
+                    <div class="stat-card rounded-lg p-4 text-center">
+                        <p class="text-3xl font-bold">24/7</p>
+                        <p class="text-sm opacity-80">Support</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Images -->
+            <div class="flex flex-col gap-6">
+                <div class="offer-image-top">
+                    <img src="sister-photo_1187127-1091.jpg" alt="Festival Celebration" class="rounded-2xl shadow-2xl w-full h-auto">
+                    <div class="mt-3 text-center">
+                        <p class="text-sm opacity-80">Celebrate in Style</p>
+                        <p class="text-lg font-semibold">Traditional Meets Modern</p>
+                    </div>
+                </div>
+                
+        
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Trust Badges Section -->
+ <section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="trust-badges grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="trust-badge bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <i class="fas fa-shield-alt text-5xl text-white mb-4"></i>
+                    <div>
+                        <h4 class="font-semibold text-white text-lg">Secure Payment</h4>
+                        <p class="text-sm text-purple-100 mt-1">100% secure transactions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="trust-badge bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <i class="fas fa-truck text-5xl text-white mb-4"></i>
+                    <div>
+                        <h4 class="font-semibold text-white text-lg">Free Shipping</h4>
+                        <p class="text-sm text-blue-100 mt-1">On orders above ₹999</p>
+                    </div>
+                </div>
+            </div>
+            <div class="trust-badge bg-gradient-to-br from-green-500 to-green-700 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <i class="fas fa-undo text-5xl text-white mb-4"></i>
+                    <div>
+                        <h4 class="font-semibold text-white text-lg">Easy Returns</h4>
+                        <p class="text-sm text-green-100 mt-1">30-day return policy</p>
+                    </div>
+                </div>
+            </div>
+            <div class="trust-badge bg-gradient-to-br from-orange-500 to-orange-700 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div class="flex flex-col items-center text-center">
+                    <i class="fas fa-headset text-5xl text-white mb-4"></i>
+                    <div>
+                        <h4 class="font-semibold text-white text-lg">24/7 Support</h4>
+                        <p class="text-sm text-orange-100 mt-1">Dedicated support team</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Leve Cottons</h3>
+                    <p class="text-gray-400 mb-4">Your premium destination for authentic Indian sarees and traditional wear since 2020.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-youtube text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-pinterest text-xl"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms & Conditions</a></li>
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Track Order</a></li>
+                        <li><a href="#" class="hover:text-white transition">Returns & Refunds</a></li>
+                        <li><a href="#" class="hover:text-white transition">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-white transition">Size Guide</a></li>
+                        <li><a href="#" class="hover:text-white transition">Care Instructions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Download Our App</h4>
+                    <p class="text-gray-400 mb-4">Shop on the go with our mobile app</p>
+                    <div class="space-y-3">
+                        <button class="bg-gray-800 px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-700 transition w-full">
+                            <i class="fab fa-apple text-2xl"></i>
+                            <div class="text-left">
+                                <div class="text-xs">Download on the</div>
+                                <div class="text-sm font-semibold">App Store</div>
+                            </div>
+                        </button>
+                        <button class="bg-gray-800 px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-700 transition w-full">
+                            <i class="fab fa-google-play text-2xl"></i>
+                            <div class="text-left">
+                                <div class="text-xs">Get it on</div>
+                                <div class="text-sm font-semibold">Google Play</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 Leve Cottons. All rights reserved. | Made with ❤️ in India</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="auth-title" class="text-2xl font-bold">Welcome Back</h2>
+                <button id="close-auth-modal" class="text-gray-500 hover:text-gray-700 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="login-form" class="auth-form">
+                <form id="login-form-element">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                        <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200" placeholder="Enter your email" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                        <input type="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200" placeholder="Enter your password" required>
+                    </div>
+                    <div class="flex items-center justify-between mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span class="text-sm text-gray-700">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-purple-600 hover:underline">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition transform hover:scale-105">
+                        Login
+                    </button>
+                </form>
+                
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fab fa-google text-red-500 mr-2"></i>
+                            <span>Google</span>
+                        </button>
+                        <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                            <span>Facebook</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <p class="mt-6 text-center text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="#" id="switch-to-signup" class="text-purple-600 hover:underline font-medium">Sign up</a>
+                </p>
+            </div>
+            
+            <div id="signup-form" class="auth-form hidden">
+                <form id="signup-form-element">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
+                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200" placeholder="Enter your name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                        <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200" placeholder="Enter your email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                        <input type="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200" placeholder="Create a password" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" required>
+                            <span class="text-sm text-gray-700">I agree to the <a href="#" class="text-purple-600 hover:underline">Terms & Conditions</a></span>
+                        </label>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition transform hover:scale-105">
+                        Sign Up
+                    </button>
+                </form>
+                
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Or sign up with</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fab fa-google text-red-500 mr-2"></i>
+                            <span>Google</span>
+                        </button>
+                        <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                            <span>Facebook</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <p class="mt-6 text-center text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="#" id="switch-to-login" class="text-purple-600 hover:underline font-medium">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                initializeApp();
+                startAnimations();
+                setupScrollEffects();
+            }, 2000);
+        });
+
+        // Initialize App
+        function initializeApp() {
+            setupHeroCarousel();
+            setupBannerCarousel();
+            setupSearch();
+            setupAuth();
+            setupMobileMenu();
+            setupBackToTop();
+            setupNotifications();
+            setupProductInteractions();
+            startTimer();
+        }
+
+        // Hero Carousel - DIFFERENT GRADIENTS FOR EACH SLIDE
+        function setupHeroCarousel() {
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.hero-slide');
+            const indicators = document.querySelectorAll('.carousel-indicator');
+            const totalSlides = slides.length;
+            let autoSlideInterval;
+
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                indicators.forEach(indicator => indicator.classList.remove('active'));
+                
+                slides[index].classList.add('active');
+                indicators[index].classList.add('active');
+                currentSlide = index;
+                
+                // Reset animations
+                const activeSlide = slides[index];
+                const textElements = activeSlide.querySelectorAll('.text-animate');
+                textElements.forEach(el => {
+                    el.style.animation = 'none';
+                    setTimeout(() => {
+                        el.style.animation = '';
+                    }, 10);
+                });
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                showSlide(currentSlide);
+            }
+
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                showSlide(currentSlide);
+            }
+
+            function startAutoSlide() {
+                autoSlideInterval = setInterval(nextSlide, 7000);
+            }
+
+            function stopAutoSlide() {
+                clearInterval(autoSlideInterval);
+            }
+
+            // Initialize
+            showSlide(0);
+            startAutoSlide();
+
+            // Controls
+            document.getElementById('next-slide').addEventListener('click', () => {
+                stopAutoSlide();
+                nextSlide();
+                startAutoSlide();
+            });
+
+            document.getElementById('prev-slide').addEventListener('click', () => {
+                stopAutoSlide();
+                prevSlide();
+                startAutoSlide();
+            });
+
+            // Indicator navigation
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    stopAutoSlide();
+                    showSlide(index);
+                    startAutoSlide();
+                });
+            });
+        }
+
+        // Banner Carousel
+        function setupBannerCarousel() {
+            let currentBanner = 0;
+            const bannerSlides = document.querySelectorAll('.banner-slide');
+            const bannerDots = document.querySelectorAll('.banner-dot');
+            const totalBanners = bannerSlides.length;
+            let bannerInterval;
+
+            function showBanner(index) {
+                bannerSlides.forEach(slide => slide.classList.remove('active'));
+                bannerDots.forEach(dot => dot.classList.remove('active'));
+                
+                bannerSlides[index].classList.add('active');
+                bannerDots[index].classList.add('active');
+                currentBanner = index;
+            }
+
+            function nextBanner() {
+                currentBanner = (currentBanner + 1) % totalBanners;
+                showBanner(currentBanner);
+            }
+
+            function startBannerAuto() {
+                bannerInterval = setInterval(nextBanner, 4000);
+            }
+
+            // Initialize
+            showBanner(0);
+            startBannerAuto();
+
+            // Dot navigation
+            bannerDots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    showBanner(index);
+                    clearInterval(bannerInterval);
+                    startBannerAuto();
+                });
+            });
+        }
+
+        // Search Functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            
+            if (searchInput) {
+                searchInput.addEventListener('focus', () => {
+                    searchSuggestions.classList.add('active');
+                });
+                
+                searchInput.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        searchSuggestions.classList.remove('active');
+                    }, 200);
+                });
+                
+                // Trending tags
+                document.querySelectorAll('.search-suggestions span').forEach(tag => {
+                    tag.addEventListener('click', () => {
+                        searchInput.value = tag.textContent;
+                        searchSuggestions.classList.remove('active');
+                        showNotification(`Searching for "${tag.textContent}"...`, 'info');
+                    });
+                });
+            }
+        }
+
+        // Auth Modal
+        function setupAuth() {
+            const authModal = document.getElementById('auth-modal');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const authTitle = document.getElementById('auth-title');
+
+            const userMenuBtn = document.getElementById('user-menu-btn');
+            const closeAuthModal = document.getElementById('close-auth-modal');
+            const switchToSignup = document.getElementById('switch-to-signup');
+            const switchToLogin = document.getElementById('switch-to-login');
+
+            if (userMenuBtn) {
+                userMenuBtn.addEventListener('click', () => {
+                    authModal.classList.add('active');
+                });
+            }
+
+            if (closeAuthModal) {
+                closeAuthModal.addEventListener('click', () => {
+                    authModal.classList.remove('active');
+                });
+            }
+
+            if (switchToSignup) {
+                switchToSignup.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    authTitle.textContent = 'Create Account';
+                    loginForm.classList.add('hidden');
+                    signupForm.classList.remove('hidden');
+                });
+            }
+
+            if (switchToLogin) {
+                switchToLogin.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    authTitle.textContent = 'Welcome Back';
+                    signupForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                });
+            }
+
+            // Form submissions
+            const loginFormElement = document.getElementById('login-form-element');
+            const signupFormElement = document.getElementById('signup-form-element');
+
+            if (loginFormElement) {
+                loginFormElement.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    showNotification('Login successful! Welcome back to Leve Cottons.', 'success');
+                    authModal.classList.remove('active');
+                    e.target.reset();
+                });
+            }
+
+            if (signupFormElement) {
+                signupFormElement.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    showNotification('Account created successfully! Welcome to Leve Cottons.', 'success');
+                    authModal.classList.remove('active');
+                    e.target.reset();
+                });
+            }
+
+            // Social login
+            document.querySelectorAll('.modal button').forEach(btn => {
+                if (btn.textContent.includes('Google') || btn.textContent.includes('Facebook')) {
+                    btn.addEventListener('click', () => {
+                        const provider = btn.textContent.trim();
+                        showNotification(`Connecting with ${provider}...`, 'info');
+                        setTimeout(() => {
+                            showNotification(`Successfully logged in with ${provider}!`, 'success');
+                            authModal.classList.remove('active');
+                        }, 1500);
+                    });
+                }
+            });
+        }
+
+        // Mobile Menu
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            const closeMobileMenu = document.getElementById('close-mobile-menu');
+
+            if (mobileMenuBtn && mobileMenu && mobileMenuOverlay) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.add('active');
+                    mobileMenuOverlay.classList.add('active');
+                });
+
+                closeMobileMenu.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                });
+
+                mobileMenuOverlay.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                });
+            }
+        }
+
+        // Back to Top Button
+        function setupBackToTop() {
+            const backToTopBtn = document.getElementById('back-to-top');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        // Notifications
+        function setupNotifications() {
+            // Create notification container if it doesn't exist
+            if (!document.getElementById('notification-container')) {
+                const container = document.createElement('div');
+                container.id = 'notification-container';
+                document.body.appendChild(container);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+                warning: 'bg-yellow-500'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${colors[type]} text-white px-6 py-4 rounded-lg shadow-xl flex items-center space-x-3`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.getElementById('notification-container').appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Product Interactions
+        function setupProductInteractions() {
+            let cartCount = 0;
+            const cartCountElement = document.getElementById('cart-count');
+            const cartBtn = document.getElementById('cart-btn');
+
+            if (cartBtn) {
+                cartBtn.addEventListener('click', () => {
+                    showNotification('Cart feature coming soon!', 'info');
+                });
+            }
+
+            // Add to cart functionality
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        cartCount++;
+                        if (cartCountElement) {
+                            cartCountElement.textContent = cartCount;
+                        }
+                        showNotification('Product added to cart!', 'success');
+                    }
+                });
+            });
+
+            // Shop by Look functionality
+            document.querySelectorAll('.look-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    showNotification('Opening look details...', 'info');
+                });
+            });
+
+            // Category cards
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const category = card.querySelector('h3').textContent;
+                    showNotification(`Browsing ${category} collection...`, 'info');
+                });
+            });
+
+            // Festival Offers subscription
+            const festivalOfferBtn = document.querySelector('.festival-offers button');
+            if (festivalOfferBtn) {
+                festivalOfferBtn.addEventListener('click', () => {
+                    const emailInput = document.querySelector('.festival-offers input[type="email"]');
+                    const email = emailInput.value.trim();
+                    if (email) {
+                        showNotification('Thank you for subscribing! Check your email for exclusive offers.', 'success');
+                        emailInput.value = '';
+                    } else {
+                        showNotification('Please enter your email address', 'warning');
+                    }
+                });
+            }
+
+            // Newsletter subscription
+            const newsletterBtns = document.querySelectorAll('.newsletter-section button');
+            newsletterBtns.forEach(btn => {
+                if (btn.textContent.includes('Subscribe')) {
+                    btn.addEventListener('click', () => {
+                        const emailInput = document.querySelector('.newsletter-section input[type="email"]');
+                        const email = emailInput.value.trim();
+                        if (email) {
+                            showNotification('Thank you for subscribing to our newsletter!', 'success');
+                            emailInput.value = '';
+                        } else {
+                            showNotification('Please enter your email address', 'warning');
+                        }
+                    });
+                }
+            });
+
+            // Gift cards
+            document.querySelectorAll('.gift-card button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    showNotification('Gift card purchase feature coming soon!', 'info');
+                });
+            });
+
+            // Featured collections
+            document.querySelectorAll('.featured-collection button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    showNotification('Opening collection details...', 'info');
+                });
+            });
+
+            // Trending products
+            document.querySelectorAll('.trending-product').forEach(product => {
+                product.addEventListener('click', () => {
+                    showNotification('Opening product details...', 'info');
+                });
+            });
+        }
+
+        // Timer
+        function startTimer() {
+            const timer = document.getElementById('timer');
+            if (!timer) return;
+
+            function updateTimer() {
+                const now = new Date();
+                const endTime = new Date();
+                endTime.setHours(23, 59, 59);
+                
+                const diff = endTime - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        // Scroll Effects
+        function setupScrollEffects() {
+            const header = document.getElementById('main-header');
+            
+            window.addEventListener('scroll', () => {
+                if (header) {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                }
+            });
+        }
+
+        // Start Animations
+        function startAnimations() {
+            // Add entrance animations to elements
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for animation
+            document.querySelectorAll('.testimonial-card, .blog-card, .trust-badge, .gift-card, .featured-collection, .trending-product').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        }
+
+        // Search functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchBtn = document.querySelector('.search-btn');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        showNotification(`Searching for "${query}"...`, 'info');
+                    const suggestions = document.getElementById('searchSuggestions');
+                        if (suggestions) {
+                            suggestions.classList.remove('active');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Close modals on outside click
+        window.addEventListener('click', (e) => {
+            const authModal = document.getElementById('auth-modal');
+            if (e.target === authModal) {
+                authModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
